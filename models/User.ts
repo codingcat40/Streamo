@@ -13,9 +13,24 @@ export interface IUser{
 const userSchema = new Schema<IUser>(
 {
     email: {type: String, required: true, unique: true},
-    password: {type: String, required: true}
+    password: {type: String, required: true},
 }, {
     timestamps: true
 })
 
-  
+userSchema.pre('save', async function (next) {
+    if(this.isModified("password")){
+        await bcrypt.hash(this.password, 10, (err, hash) => {
+            if(err) return next(err);
+            this.password = hash;
+            next()
+        })
+    }
+    else{
+        next();
+    }
+})
+
+const User = models?.User || model<IUser>("User", userSchema)
+
+export default User
