@@ -5,6 +5,8 @@ const MONGODB_URI = process.env.MONGODB_URI!
 if(!MONGODB_URI){
     throw new Error("Please define mongo URI in env variables")
 }
+
+
 let cached = global.mongoose
 
 if(!cached){
@@ -24,14 +26,13 @@ export async function connectDB(){
         .then(() => 
             mongoose.connection
         )
-
-        
     }
+
     try{
         cached.conn = await cached.promise
     } catch(error){
         cached.promise = null
-        throw Error
+        throw error
     }
 
     return cached.conn
